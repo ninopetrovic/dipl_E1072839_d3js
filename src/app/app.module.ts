@@ -13,6 +13,9 @@ import { StackedBarChartComponent } from './04_stacked_bar_chart/stacked-bar-cha
 import { BrushZoomComponent } from './05_brush_zoom/brush-zoom.component';
 import { PieChartComponent } from './06_pie_chart/pie-chart.component';
 import { DonutChartComponent } from './07_donut_chart/donut-chart.component';
+import {EurovocTestComponent} from './eurovoc_test_01/eurovoc_test_01.component';
+import {HttpClient, HttpClientModule, HttpHandler} from '@angular/common/http';
+import {EurovocTestComponentTwo} from 'src/app/eurovoc_test_2/eurovoc_test_02.component';
 
 const appRoutes: Routes = [
     { path: 'line-chart', component: LineChartComponent },
@@ -22,6 +25,8 @@ const appRoutes: Routes = [
     { path: 'brush-zoom', component: BrushZoomComponent },
     { path: 'pie-chart', component: PieChartComponent },
     { path: 'donut-chart', component: DonutChartComponent },
+    { path: 'test-eurovoc', component: EurovocTestComponent },
+    { path: 'test-eurovoc2', component: EurovocTestComponentTwo },
     { path: '',
         redirectTo: '/line-chart',
         pathMatch: 'full'
@@ -39,6 +44,8 @@ const appRoutes: Routes = [
         BrushZoomComponent,
         PieChartComponent,
         DonutChartComponent,
+        EurovocTestComponent,
+        EurovocTestComponentTwo
     ],
     imports: [
         BrowserModule,
@@ -46,8 +53,10 @@ const appRoutes: Routes = [
         RouterModule.forRoot(appRoutes),
         MatMenuModule,
         MatSidenavModule,
+        HttpClientModule
     ],
-    providers: [],
+    providers: [
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

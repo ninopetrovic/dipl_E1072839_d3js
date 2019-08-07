@@ -37,6 +37,14 @@ export class AppComponent {
             title: 'Donut chart',
             route: '/donut-chart'
         },
+        {
+            title: 'Test EuroVoc',
+            route: '/test-eurovoc'
+        },
+        {
+            title: 'Test EuroVoc2',
+            route: '/test-eurovoc2'
+        },
     ];
 
 }

@@ -6,3 +6,8 @@
 .arc path {
     stroke: #fff;
 }
+
+.nd-label {
+
+    font: 10px "Droid Sans" !important;
+}
