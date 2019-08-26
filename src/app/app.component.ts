@@ -9,38 +9,38 @@ export class AppComponent {
     title = 'D3.js with Angular!';
 
     examples = [
-        {
-            title: 'Line Chart',
-            route: '/line-chart'
-        },
-        {
-            title: 'Multi Series Line Chart',
-            route: '/multi-series'
-        },
-        {
-            title: 'Bar Chart',
-            route: '/bar-chart'
-        },
-        {
-            title: 'Stacked Bar Chart',
-            route: '/stacked-bar-chart'
-        },
-        {
-            title: 'Brush Zoom',
-            route: '/brush-zoom'
-        },
-        {
-            title: 'Pie Chart',
-            route: '/pie-chart'
-        },
-        {
-            title: 'Donut chart',
-            route: '/donut-chart'
-        },
-        {
-            title: 'Test EuroVoc',
-            route: '/test-eurovoc'
-        },
+        // {
+        //     title: 'Line Chart',
+        //     route: '/line-chart'
+        // },
+        // {
+        //     title: 'Multi Series Line Chart',
+        //     route: '/multi-series'
+        // },
+        // {
+        //     title: 'Bar Chart',
+        //     route: '/bar-chart'
+        // },
+        // {
+        //     title: 'Stacked Bar Chart',
+        //     route: '/stacked-bar-chart'
+        // },
+        // {
+        //     title: 'Brush Zoom',
+        //     route: '/brush-zoom'
+        // },
+        // {
+        //     title: 'Pie Chart',
+        //     route: '/pie-chart'
+        // },
+        // {
+        //     title: 'Donut chart',
+        //     route: '/donut-chart'
+        // },
+        // {
+        //     title: 'Test EuroVoc',
+        //     route: '/test-eurovoc'
+        // },
         {
             title: 'Test EuroVoc2',
             route: '/test-eurovoc2'

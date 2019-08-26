@@ -55,11 +55,18 @@ export class EurovocTestComponent implements OnInit {
             .outerRadius(d => Math.max(d.y0 * this.radius, d.y1 * this.radius - 1));
         this.getChart();
         d3.select('#testChartNino');
+        d3.select('#testChartNino').call(d3.zoom().on('zoom', () => {
+            // console.log(d3.event, this.width);
+            const transform = d3.event.transform;
+            // transform.y /= 2;
+            // transform.x /= 2;
+            d3.select('g').attr('transform', transform);
+        }));
     }
 
     public getChart() {
         const root = this.partition(this.data);
-
+        console.log('root', root);
         root.each(d => d.current = d);
 
         const svg = d3.select('#testChartNino')
@@ -69,7 +76,6 @@ export class EurovocTestComponent implements OnInit {
         const g = svg.append('g')
             .attr('transform', `translate(${this.width / 2},${this.width / 2})`);
 
-        console.log('root', root.children);
         const arc = d3.arc()
             .startAngle(d => d.x0)
             .endAngle(d => d.x1)
@@ -84,14 +90,13 @@ export class EurovocTestComponent implements OnInit {
         const path = g.append('g')
             .selectAll('path')
             .data(root.descendants().slice(1))
-            .enter().append('path')
+            .enter()
+            .append('path')
             .attr('fill', d => {
-                while (d.depth > 1) {
-                    d = d.parent;
-                    return color(d.data.name);
-                }
+                while (d.depth > 1) { d = d.parent; }
+                return color(d.data.name);
             })
-            .attr('fill-opacity', d => arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
+            .attr('fill-opacity', d => arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0.2)
             .attr('d', d => arc(d.current));
 
         path.filter(d => d.children)
@@ -99,7 +104,7 @@ export class EurovocTestComponent implements OnInit {
             .on('click', clicked);
 
         path.append('title')
-            .text(d => `${d.ancestors().map(d => d.data.name).reverse().join('/')}\n${format(d.value)}`);
+            .text(d => `${d.ancestors().map(f => f.data.name).reverse().join('/')}\n${format(d.value)}`);
 
         const label = g.append('g')
             .attr('pointer-events', 'none')
@@ -107,7 +112,8 @@ export class EurovocTestComponent implements OnInit {
             .style('user-select', 'none')
             .selectAll('text')
             .data(root.descendants().slice(1))
-            .enter().append('text')
+            .enter()
+            .append('text')
             .attr('dy', '0.35em')
             .attr('fill-opacity', d => +labelVisible(d.current))
             .attr('transform', d => labelTransform(d.current))
@@ -136,9 +142,12 @@ export class EurovocTestComponent implements OnInit {
             // so that if this transition is interrupted, entering arcs will start
             // the next transition from the desired position.
             path.transition(t)
+                // TWEENing je torej kako se bodo podatki skozi čas preslikali iz zacetne vrednosti v koncno
+                // recimo da imamo podatek z zacetno vrednostjo 'a' in koncno vrednostjo 'e' bo
+                // tweening poskrbel da bo tranzicija tekoča: -> a - B - C - D - e
                 .tween('data', d => {
                     const i = d3.interpolate(d.current, d.target);
-                    return (t) => { d.current = i(t); };
+                    return t => d.current = i(t);
                 })
                 .filter(function(d) {
                     return +this.getAttribute('fill-opacity') || arcVisible(d.target);
@@ -154,8 +163,9 @@ export class EurovocTestComponent implements OnInit {
         }
 
         function arcVisible(d) {
-            return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
-            // return true;
+            /* y-loni so vedno za 1 vsak nivo za 1 vecji...
+            torej 10 nam predstavlja v koliko nivo globine hocemo videti ... 1 pa od katerega dalje */
+            return d.y1 <= 10 && d.y0 >= 1 && d.x1 > d.x0;
         }
 
         function labelVisible(d) {
@@ -175,7 +185,13 @@ export class EurovocTestComponent implements OnInit {
 
     public partition(data) {
         const root = d3.hierarchy(data)
-            .sum(d => d.value)
+            .sum(d => {
+                if (d.children) {
+                    // return d.children.length;
+                } else {
+                    return 1; // s tem smo vbistvu dosegli da so posortirani po tem koliko imajo childrenov... ker vsak list vrne št.1 in to se potem sesteje v parentu hierarhicno.
+                }
+            })
             .sort((a, b) => b.value - a.value);
         return d3.partition()
             .size([2 * Math.PI, root.height + 1])

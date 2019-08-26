@@ -28,10 +28,10 @@ const appRoutes: Routes = [
     { path: 'test-eurovoc', component: EurovocTestComponent },
     { path: 'test-eurovoc2', component: EurovocTestComponentTwo },
     { path: '',
-        redirectTo: '/line-chart',
+        redirectTo: '/test-eurovoc2',
         pathMatch: 'full'
     },
-    { path: '**', component: LineChartComponent }
+    { path: '**', component: EurovocTestComponentTwo }
 ];
 
 @NgModule({
