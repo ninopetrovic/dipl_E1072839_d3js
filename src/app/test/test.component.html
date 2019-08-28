@@ -48,7 +48,7 @@
             <div class="card">
                 <div class="card-header">Hierarhična struktura slovarja</div>
                 <div class="card-body">
-<!--                    <ejs-treeview></ejs-treeview>-->
+                    <ejs-treeview #thesTreeView [fields]="fields"></ejs-treeview>
                 </div>
             </div>
         </div>
@@ -64,7 +64,7 @@
             <div class="card">
                 <div class="card-header">Vizualizacija</div>
                 <div class="card-body">
-                    This is some text within a card body.
+                    <router-outlet routerLink="/test-component/test-eurovoc2"></router-outlet>
                 </div>
             </div>
         </div>

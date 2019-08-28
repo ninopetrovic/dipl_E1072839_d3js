@@ -18,6 +18,8 @@ import {HttpClient, HttpClientModule, HttpHandler} from '@angular/common/http';
 import {EurovocTestComponentTwo} from 'src/app/eurovoc_test_2/eurovoc_test_02.component';
 import {TestComponent} from './test/test.component';
 import {CommonModule} from '@angular/common';
+import {CookieService} from 'ngx-cookie-service';
+import {TestModule} from './test/test.module';
 
 const appRoutes: Routes = [
     { path: 'line-chart', component: LineChartComponent },
@@ -26,7 +28,6 @@ const appRoutes: Routes = [
     { path: 'stacked-bar-chart', component: StackedBarChartComponent },
     { path: 'brush-zoom', component: BrushZoomComponent },
     { path: 'pie-chart', component: PieChartComponent },
-    { path: 'donut-chart', component: DonutChartComponent },
     { path: 'test-eurovoc', component: EurovocTestComponent },
     { path: 'test-eurovoc2', component: EurovocTestComponentTwo },
     { path: 'test-component', component: TestComponent },
@@ -49,10 +50,8 @@ const appRoutes: Routes = [
         StackedBarChartComponent,
         BrushZoomComponent,
         PieChartComponent,
-        DonutChartComponent,
         EurovocTestComponent,
         EurovocTestComponentTwo,
-        TestComponent
     ],
     imports: [
         CommonModule,
@@ -62,8 +61,10 @@ const appRoutes: Routes = [
         MatMenuModule,
         MatSidenavModule,
         HttpClientModule,
+        TestModule
     ],
     providers: [
+        CookieService
     ],
     bootstrap: [AppComponent]
 })
