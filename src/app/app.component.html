@@ -1,5 +1,5 @@
 <mat-drawer-container fullscreen>
-    <mat-drawer mode="side" opened="true" style="background-color: #212238; width: 200px">
+    <mat-drawer mode="side" opened="true" style="background-color: #212238; width: 0px">
         <mat-menu ></mat-menu>
         <a mat-menu-item *ngFor="let item of examples" [routerLink]="item.route" routerLinkActive="active" style="color: #dcdcdc">{{ item.title }}</a>
     </mat-drawer>
