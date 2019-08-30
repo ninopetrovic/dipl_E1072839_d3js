@@ -20,6 +20,9 @@ import {TestComponent} from './test/test.component';
 import {CommonModule} from '@angular/common';
 import {CookieService} from 'ngx-cookie-service';
 import {TestModule} from './test/test.module';
+import {LoginComponent} from './login/login.component';
+import {LoginModule} from './login/login.module';
+import {AuthGuardService as AuthGuard} from './auth/auth-guard.service';
 
 const appRoutes: Routes = [
     { path: 'line-chart', component: LineChartComponent },
@@ -30,10 +33,22 @@ const appRoutes: Routes = [
     { path: 'pie-chart', component: PieChartComponent },
     { path: 'test-eurovoc', component: EurovocTestComponent },
     { path: 'test-eurovoc2', component: EurovocTestComponentTwo },
-    { path: 'test-component', component: TestComponent },
+    {
+        path: 'test-component',
+        component: TestComponent,
+        // canActivate: [AuthGuard],
+        children: [{
+            path: 'vizualize',
+            component: EurovocTestComponentTwo
+        }]
+    },
+    {
+        path: 'login',
+        component: LoginComponent
+    },
     { path: '',
         redirectTo: '/test-eurovoc2',
-        pathMatch: 'full'
+        pathMatch: 'full',
     },
     { path: '**',
         redirectTo: '/test-eurovoc2',
@@ -61,10 +76,12 @@ const appRoutes: Routes = [
         MatMenuModule,
         MatSidenavModule,
         HttpClientModule,
-        TestModule
+        TestModule,
+        LoginModule,
     ],
     providers: [
-        CookieService
+        CookieService,
+        AuthGuard
     ],
     bootstrap: [AppComponent]
 })
