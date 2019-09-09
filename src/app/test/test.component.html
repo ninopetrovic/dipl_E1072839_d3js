@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-12 d-flex flex-row">
             <div class="dropdown mr-2">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown">Slovar
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown">Tezaver
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu p-0">
@@ -34,31 +34,74 @@
         </div>
     </div>
     <div class="row mt-2">
-        <div class="col-12">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">ConceptScheme</li>
-                    <li class="breadcrumb-item active" aria-current="page">Concept</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-lg-3 col-sm-5 pr-1">
             <div class="card">
-                <div class="card-header">Hierarhična struktura slovarja</div>
+                <div class="card-header">Hierarhična struktura tezavra <b>{{this.thesName}}</b> v <b>{{this.lang}}</b></div>
                 <div class="card-body p-0">
+                    <div class="d-flex justify-content-center" *ngIf="thesLoading">
+                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray"></i>
+                    </div>
                     <div class="dipl-treeview-container">
-                        <ejs-treeview #thesTreeView id='diplTreeView' [fields]="fields" ></ejs-treeview>
+                        <ejs-treeview #thesTreeView id='diplTreeView' [fields]="fields" (nodeSelected)="nodeSelected($event)">
+                            <ng-template #nodeTemplate="" let-data="">
+                                <div class="d-flex flex-row">
+                                    <div class="mr-2 type-icon">
+                                        <span class="{{data.type}}"></span>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <small style="color: gray; line-height: 12px">{{data.type}}</small>
+                                        <span style="line-height: 16px">{{data.showLabel}}</span>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        </ejs-treeview>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-lg-4 col-sm-7 px-lg-1 pl-sm-1">
             <div class="card">
-                <div class="card-header">Entiteta</div>
+                <div class="card-header">Entiteta <b>{{this.selectedEntityLabel}}</b></div>
                 <div class="card-body">
-                    This is some text within a card body.
+                    <div *ngIf="selectedEntity">
+                        <div style="color: gray"><span><b>URI: </b></span><span>{{selectedEntity['uri']}}</span><br></div>
+                        <h3>{{selectedEntity['showLabel']}} <span style="color: green">[{{this.lang}}]</span></h3>
+                        <div>
+                            <small *ngFor="let label of selectedEntity['labels']">
+                                <span style="text-transform: uppercase;"><b>[{{label.lang}}] </b></span><span>{{label.label}}, </span>
+                            </small>
+                        </div>
+                        <hr>
+                        <h6 class="mb-1 mt-2">Širši izrazi: <small style="color: gray" *ngIf="selectedEntity['broader'].length == 0">BREZ</small></h6>
+                        <ul class="list-group">
+                            <li class="list-group-item" *ngFor="let term of selectedEntity['broader']" (click)="termSelect(term)">
+                                <small><b style="color: #a20017">[BT] </b></small>
+                                <span>{{term['showLabel']}}</span>
+                            </li>
+                        </ul>
+                        <h6 class="mb-1 mt-2">Ožji izrazi: <small style="color: gray" *ngIf="selectedEntity['narrower'].length == 0">BREZ</small></h6>
+                        <ul class="list-group">
+                            <li class="list-group-item" *ngFor="let term of selectedEntity['narrower']" (click)="termSelect(term)">
+                                <small><b style="color: #04a449">[NT] </b></small>
+                                <span>{{term['showLabel']}}</span>
+                            </li>
+                        </ul>
+                        <h6 class="mb-1 mt-2">Sorodni izrazi: <small style="color: gray" *ngIf="selectedEntity['related'].length == 0">BREZ</small></h6>
+                        <ul class="list-group">
+                            <li class="list-group-item" *ngFor="let term of selectedEntity['related']" (click)="termSelect(term)">
+                                <small><b style="color: #053dc0">[RT] </b></small>
+                                <span>{{term['showLabel']}}</span>
+                            </li>
+                        </ul>
+                        <hr>
+                        <h6>Povezave do drugih slovarjev:</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item" *ngFor="let term of selectedEntity['matches']">
+                                <small><b style="color: #928f93">[{{term['type']}}] </b></small>
+                                <a href="{{term['thesEntityUriTo']}}" target="_blank">{{term['thesEntityUriTo']}}</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

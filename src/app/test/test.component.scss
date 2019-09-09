@@ -22,3 +22,32 @@
 //::ng-deep .e-list-item {
 //    padding: 0px;
 //}
+
+
+// TYPE icons
+::ng-deep.type-icon {
+    width: 15px;
+    .concept {
+        width: 10px;
+    }
+    .concept:before { content: '\f192'; font-family: 'FontAwesome'; color: #bd0002; font-size: 16px;}
+    .group{
+
+    }
+    .group:before { content: '\f07c'; font-family: 'FontAwesome'; color: #dbc946; font-size: 16px;}
+    .supergroup {
+        width: 10px;
+    }
+    .supergroup:before { content: '\f07c'; font-family: 'FontAwesome'; color: #dbc946; font-size: 16px;}
+}
+
+// LIST STYILNG
+.list-group {
+    .list-group-item {
+        padding: 5px;
+    }
+    .list-group-item:hover {
+        background-color: #f5ecf4;
+        cursor: pointer;
+    }
+}

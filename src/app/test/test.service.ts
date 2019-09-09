@@ -27,10 +27,15 @@ export class TestService {
         }));
     }
 
-    getThesaurus(name: string) {
+    getThesaurus(name: string): Observable<any> {
+        return this.http.get<any>(this.prePath + '/api/dictionary', this.httpOptions);
     }
 
-    getEntityByURI(URI: string) {
+    getEntityByUri(uri: string): Observable<any> {
+        const creds = {
+            uri: uri
+        };
+        return this.http.post<any>(this.prePath + '/api/dictionary/entity', creds, this.httpOptions);
     }
 
     getEntityByLabel(label: string) {
