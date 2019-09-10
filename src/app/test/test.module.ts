@@ -7,6 +7,8 @@ import {RouterModule, Routes} from '@angular/router';
 import {EurovocTestComponentTwo} from '../eurovoc_test_2/eurovoc_test_02.component';
 import {DonutChartComponent} from '../07_donut_chart/donut-chart.component';
 import {AppModule} from '../app.module';
+import {FormsModule} from '@angular/forms';
+import {LabelFilterPipe} from '../shared/label.pipe';
 
 const testRouts: Routes = [
     { path: 'test-component/test-eurovoc2', component: DonutChartComponent }
@@ -14,12 +16,18 @@ const testRouts: Routes = [
 
 @NgModule({
     imports: [
-      CommonModule,
-      TreeViewModule,
-      RouterModule.forRoot(testRouts),
+        CommonModule,
+        TreeViewModule,
+        RouterModule.forRoot(testRouts),
+        FormsModule,
     ],
-    declarations: [TestComponent, DonutChartComponent, EurovocTestComponentTwo],
+    declarations: [
+        TestComponent,
+        DonutChartComponent,
+        EurovocTestComponentTwo,
+        LabelFilterPipe,
+    ],
     providers: [TestService],
-    exports: [TestComponent, TreeViewComponent]
+    exports: [TestComponent, TreeViewComponent, LabelFilterPipe]
 })
 export class TestModule { }

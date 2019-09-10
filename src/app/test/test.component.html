@@ -19,7 +19,7 @@
                     <li class="list-group-item">Unsecothes</li>
                 </ul>
             </div>
-            <div class="dropdown mr-2">
+            <div class="dropdown">
                 <button class="btn btn-outline-success dropdown-toggle" type="button" data-toggle="dropdown">Jezik
                     <span class="caret"></span>
                 </button>
@@ -31,30 +31,89 @@
                     <li class="list-group-item">Unsecothes</li>
                 </ul>
             </div>
+            <div class="input-group col-4">
+                <input type="text" [(ngModel)]="searchString" class="form-control" placeholder="Iskanje po labeli" aria-label="label search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" (click)="searchByLabel()">Poišči</button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row mt-2">
         <div class="col-lg-3 col-sm-5 pr-1">
-            <div class="card">
-                <div class="card-header">Hierarhična struktura tezavra <b>{{this.thesName}}</b> v <b>{{this.lang}}</b></div>
-                <div class="card-body p-0">
-                    <div class="d-flex justify-content-center" *ngIf="thesLoading">
-                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray"></i>
-                    </div>
-                    <div class="dipl-treeview-container">
-                        <ejs-treeview #thesTreeView id='diplTreeView' [fields]="fields" (nodeSelected)="nodeSelected($event)">
-                            <ng-template #nodeTemplate="" let-data="">
-                                <div class="d-flex flex-row">
-                                    <div class="mr-2 type-icon">
-                                        <span class="{{data.type}}"></span>
+            <div class="row" *ngIf="searchData.length > 0">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">Rezultat iskanja</div>
+                        <div class="card-body p-1">
+                            <div *ngFor="let item of searchData">
+                                <b>{{item['showLabel']}} <span style="color: green">[{{this.lang}}]</span></b><span> - iz tezavra <b style="color:red">{{item['thesName']}}</b></span>
+<!--                                ACRODION-->
+                                <div class="accordion" id="accordionExample" *ngIf="searchData.length < 25">
+                                    <div class="card">
+                                        <div class="card-header p-0" id="headingOne">
+                                            <span class="mb-0">
+                                                <button class="btn btn-link btn-sm" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                    <small>Glavne oznake</small>
+                                                </button>
+                                            </span>
+                                        </div>
+                                        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                            <div class="card-body p-1">
+                                                <small *ngFor="let label of item['labels'] | labelfilter:{'lang': !'LINKED', 'type': 'prefLabel'}">
+                                                    <span style="text-transform: uppercase;"><b>[{{label['lang']}}] </b></span><span>{{label['label']}}, </span>
+                                                </small>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="d-flex flex-column">
-                                        <small style="color: gray; line-height: 12px">{{data.type}}</small>
-                                        <span style="line-height: 16px">{{data.showLabel}}</span>
+                                    <div class="card">
+                                        <div class="card-header p-0" id="headingTwo">
+                                            <span class="mb-0">
+                                                <button class="btn btn-link collapsed btn-sm" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                    <small>Alternativne oznake</small>
+                                                </button>
+                                            </span>
+                                        </div>
+                                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                            <div class="card-body p-1">
+                                                <small *ngFor="let label of item['labels'] | labelfilter:{'lang': !'LINKED', 'type': 'altLabel'}">
+                                                    <span style="text-transform: uppercase;"><b>[{{label['lang']}}] </b></span><span>{{label['label']}}, </span>
+                                                </small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </ng-template>
-                        </ejs-treeview>
+<!--                                END ACRODION-->
+                                <hr class="my-1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">Hierarhična struktura tezavra <b>{{this.thesName}}</b> v <b>{{this.lang}}</b></div>
+                        <div class="card-body p-0">
+                            <div class="d-flex justify-content-center" *ngIf="thesLoading">
+                                <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray"></i>
+                            </div>
+                            <div class="dipl-treeview-container">
+                                <ejs-treeview #thesTreeView id='diplTreeView' [fields]="fields" (nodeSelected)="nodeSelected($event)">
+                                    <ng-template #nodeTemplate="" let-data="">
+                                        <div class="d-flex flex-row">
+                                            <div class="mr-2 type-icon">
+                                                <span class="{{data.type}}"></span>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <small style="color: gray; line-height: 12px">{{data.type}}</small>
+                                                <span style="line-height: 16px">{{data.showLabel}}</span>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </ejs-treeview>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

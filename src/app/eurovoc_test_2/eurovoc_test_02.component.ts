@@ -21,7 +21,7 @@ declare const ej: any;
 })
 export class EurovocTestComponentTwo implements OnInit {
     @Input() dataSource;
-    @Input() lang = 'en';
+    @Input() lang;
 
     data: any;
     width = 1024;
@@ -44,10 +44,10 @@ export class EurovocTestComponentTwo implements OnInit {
         // });
 
         this.testService.getThesaurus('Gemet').subscribe(data => {
-            console.log(data);
+            // console.log(data);
             this.data = data;
             this.remapData(this.data);
-            console.log(this.data);
+            // console.log(this.data);
             this.buildChart(this.data);
         });
         this.svgLoaded.subscribe(loaded => {
@@ -87,7 +87,7 @@ export class EurovocTestComponentTwo implements OnInit {
 
     buildChart(data): void {
         const rootPartition = this.partition(data);
-        console.log('root partition', rootPartition);
+        // console.log('root partition', rootPartition);
 
         rootPartition.each(d => d.current = d);
         d3.select('g').remove();
@@ -142,7 +142,7 @@ export class EurovocTestComponentTwo implements OnInit {
         // ancestors() je array prednikov skozi katerega mapiramo.. reverse za to da je od roota -> childu;
             .text(d => '' + d.ancestors().map(f => f.data.name).reverse().join(' -> ') + '');
 
-        console.log(rootPartition);
+        // console.log(rootPartition);
         // dodajanje napisa na krozne loke
         const label = g.append('g')
             .attr('pointer-events', 'none')
@@ -185,7 +185,7 @@ export class EurovocTestComponentTwo implements OnInit {
             }
 
 
-            // TODO pogruntaj
+            // TODO
             rootPartition.each(d => d.target = {
                 x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
                 x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
@@ -224,7 +224,7 @@ export class EurovocTestComponentTwo implements OnInit {
     }
 
     nodeClick(node) {
-        console.log(node);
+        // console.log(node);
         this.data = node.data;
         this.buildChart(this.data);
     }
@@ -276,7 +276,7 @@ export class EurovocTestComponentTwo implements OnInit {
 
     partition(data) {
         const root = d3.hierarchy(data).sum(d => {
-            if (!d.children) { console.log(d); return 1; }
+            if (!d.children) { return 1; }
         }).sort((a, b) => b.value - a.value);
         return d3.partition().size([2 * Math.PI, root.height + 1])(root);
     }

@@ -2,6 +2,7 @@ import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {TestService} from './test.service';
 import {TreeViewComponent} from '@syncfusion/ej2-angular-navigations';
 import {TreeView} from '@syncfusion/ej2-navigations';
+import {LabelFilterPipe} from '../shared/label.pipe';
 import * as d3 from 'd3';
 
 declare const $: any;
@@ -16,15 +17,23 @@ export class TestComponent implements OnInit, AfterViewInit {
     @ViewChild('thesTreeView') thesTreeView: TreeViewComponent;
     dataSource = [];
     thesDataSource = [];
+    thesFlatData = [];
     thesLoading = false;
     vizualsLoaded = false;
     treeViewMappedData = [];
     fields: Object;
-    lang = 'ar';
+    lang = 'sl';
     thesName = 'Gemet';
     selectedEntity: Object;
     selectedEntityUri = '';
     selectedEntityLabel = '';
+
+    // search
+    searchString = '';
+    searchData = [];
+
+    // pipeFilterArgs
+    labelFilterArgs = {'lang': !'LINKED'};
 
     constructor(private testService: TestService) { }
 
@@ -51,6 +60,10 @@ export class TestComponent implements OnInit, AfterViewInit {
             this.fields = { dataSource: this.thesDataSource['member'], id: 'uri', text: 'showLabel', child: 'member', type: 'type' };
             this.thesLoading = false;
             console.log(this.thesTreeView);
+
+            // FLAT DATA
+            // this.mapToFlatData(thesData);
+            // console.log(this.thesFlatData);
         });
 
         this.getEntityByUri('concept/2712');
@@ -61,7 +74,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
 
     treeViewMapper(thesData) {
-        if (thesData.member.length > 0) {
+        if (thesData.member && thesData.member.length > 0) {
             thesData.member.forEach(m => {
                 if (m.labels.find(l => l.lang === this.lang && l.type === 'prefLabel')) {
                     m['showLabel'] = m.labels.find(l => l.lang === this.lang && l.type === 'prefLabel').label;
@@ -73,12 +86,27 @@ export class TestComponent implements OnInit, AfterViewInit {
         }
     }
 
+    mapToFlatData(thesData) {
+        if (thesData.member && thesData.member.length > 0) {
+            thesData.member.forEach((m) => {
+                this.mapToFlatData(m);
+            });
+        }
+        // delete thesData.member;
+        this.thesFlatData.push(thesData);
+    }
+
     labelMapper(entity) {
+        if (!entity) { return; }
         if (entity.labels.find(l => l.lang === this.lang && l.type === 'prefLabel')) {
             entity['showLabel'] = entity.labels.find(l => l.lang === this.lang && l.type === 'prefLabel').label;
         } else {
-            entity['showLabel'] = '**' + entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel').label + '**';
-            console.log('ta labela nima izraza v tem jeziku: ', entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel').label);
+            if (entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel')) {
+                entity['showLabel'] = '**' + entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel').label + '**';
+                console.log('ta labela nima izraza v tem jeziku: ', entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel').label);
+            } else {
+                entity['showLabel'] = '*** labela ne obstaja ***';
+            }
         }
         console.log(entity['showLabel']);
         entity.member.forEach(m => {
@@ -108,7 +136,12 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
 
     selectedLeaf(args) {
+        console.log('selectedLeaf', args);
         this.getEntityByUri(args);
+        // this.thesTreeView.ensureVisible(this.thesTreeView.getNode(args).id);
+        this.thesTreeView.expandAll();
+        console.log(this.thesTreeView.getNode(args));
+
     }
 
     getEntityByUri(uri) {
@@ -120,4 +153,15 @@ export class TestComponent implements OnInit, AfterViewInit {
         });
     }
 
+    // search
+    searchByLabel() {
+        console.log(this.searchString);
+        this.testService.searchByLabel(this.searchString).subscribe(data => {
+            this.searchData = data;
+            console.log(this.searchData);
+            this.searchData.forEach((item) => {
+                this.labelMapper(item);
+            });
+        });
+    }
 }

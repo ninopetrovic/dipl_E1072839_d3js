@@ -85,6 +85,8 @@ const appRoutes: Routes = [
         AuthGuard,
         TestService
     ],
+    exports: [
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

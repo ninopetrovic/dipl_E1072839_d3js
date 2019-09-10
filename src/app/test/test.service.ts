@@ -38,6 +38,10 @@ export class TestService {
         return this.http.post<any>(this.prePath + '/api/dictionary/entity', creds, this.httpOptions);
     }
 
+    searchByLabel(label: string): Observable<any> {
+        return this.http.get<any>(this.prePath + '/api/dictionary/search/' + label, this.httpOptions);
+    }
+
     getEntityByLabel(label: string) {
     }
 }
