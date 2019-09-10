@@ -1,9 +1,11 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import { Query, DataManager, Predicate } from '@syncfusion/ej2-data';
 import {TestService} from './test.service';
 import {TreeViewComponent} from '@syncfusion/ej2-angular-navigations';
 import {TreeView} from '@syncfusion/ej2-navigations';
 import {LabelFilterPipe} from '../shared/label.pipe';
 import * as d3 from 'd3';
+import { isoLangs } from '../shared/isoLangs';
 
 declare const $: any;
 declare const ej: any;
@@ -14,23 +16,50 @@ declare const ej: any;
   styleUrls: ['./test.component.scss']
 })
 export class TestComponent implements OnInit, AfterViewInit {
+    // languages
+    private _lang = 'sl';
+    get lang() { return this._lang; }
+    set lang(val: string) {
+        if (val !== this._lang) {
+            this._lang = val;
+            // TODO reftesh all data
+            if (this.thesDataSource) {
+                this.treeViewMapper(this.thesDataSource);
+                this.fields = { dataSource: [...this.thesDataSource['member']], id: 'uri', text: 'showLabel', child: 'member', type: 'type' };
+            }
+            if (this.selectedEntity) {
+                this.labelMapper(this.selectedEntity);
+            }
+            if (this.searchData && this.searchData.length > 0) {
+                this.searchLangMap(this.searchData);
+            }
+        }
+    }
+    langName = 'slovenščina';
+    isoLangs = isoLangs;
+    query;
+
     @ViewChild('thesTreeView') thesTreeView: TreeViewComponent;
     dataSource = [];
     thesDataSource = [];
     thesFlatData = [];
     thesLoading = false;
-    vizualsLoaded = false;
+
     treeViewMappedData = [];
     fields: Object;
-    lang = 'sl';
     thesName = 'Gemet';
     selectedEntity: Object;
     selectedEntityUri = '';
     selectedEntityLabel = '';
 
+    // vizuals
+    vizualsLoaded = false;
+    vizualsHovered = '';
+
     // search
+    searchLoading = false;
     searchString = '';
-    searchData = [];
+    searchData;
 
     // pipeFilterArgs
     labelFilterArgs = {'lang': !'LINKED'};
@@ -38,6 +67,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     constructor(private testService: TestService) { }
 
     ngOnInit() {
+        console.log(this.isoLangs);
         $.getJSON('https://raw.githubusercontent.com/d3/d3-hierarchy/v1.1.8/test/data/flare.json', (res) => {
             console.log(res);
             this.dataSource = res;
@@ -135,12 +165,12 @@ export class TestComponent implements OnInit, AfterViewInit {
         this.getEntityByUri(term.uri);
     }
 
-    selectedLeaf(args) {
-        console.log('selectedLeaf', args);
-        this.getEntityByUri(args);
+    selectedLeaf(uri) {
+        console.log('selectedLeaf', uri);
+        this.getEntityByUri(uri);
         // this.thesTreeView.ensureVisible(this.thesTreeView.getNode(args).id);
         this.thesTreeView.expandAll();
-        console.log(this.thesTreeView.getNode(args));
+        console.log(this.thesTreeView.getNode(uri));
 
     }
 
@@ -156,12 +186,24 @@ export class TestComponent implements OnInit, AfterViewInit {
     // search
     searchByLabel() {
         console.log(this.searchString);
+        this.searchLoading = true;
+        this.searchData = [];
         this.testService.searchByLabel(this.searchString).subscribe(data => {
             this.searchData = data;
             console.log(this.searchData);
-            this.searchData.forEach((item) => {
-                this.labelMapper(item);
-            });
+            this.searchLangMap(this.searchData);
+            this.searchLoading = false;
         });
+    }
+    searchLangMap(data) {
+        data.forEach((item) => {
+            this.labelMapper(item);
+        });
+    }
+
+    // language
+    langSelect(args) {
+        console.log('langSelect', args);
+        this.lang = args.itemData.code;
     }
 }

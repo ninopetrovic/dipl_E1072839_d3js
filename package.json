@@ -23,7 +23,7 @@
         "@angular/platform-browser-dynamic": "6.0.3",
         "@angular/router": "6.0.3",
         "@syncfusion/ej2-angular-base": "17.2.34",
-        "@syncfusion/ej2-angular-dropdowns": "17.2.36",
+        "@syncfusion/ej2-angular-dropdowns": "^17.2.36",
         "@syncfusion/ej2-angular-layouts": "17.2.36",
         "@syncfusion/ej2-angular-navigations": "17.2.36",
         "bootstrap": "^4.1.3",

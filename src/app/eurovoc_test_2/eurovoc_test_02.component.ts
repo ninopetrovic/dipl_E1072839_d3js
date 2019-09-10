@@ -30,6 +30,7 @@ export class EurovocTestComponentTwo implements OnInit {
 
     @Output() svgLoaded = new EventEmitter();
     @Output() selectedLeaf = new EventEmitter();
+    @Output() hoveredLeafText = new EventEmitter();
 
     constructor(private testService: TestService) {}
 
@@ -55,14 +56,17 @@ export class EurovocTestComponentTwo implements OnInit {
                 // console.log(e);
                 const hoversplit = $(e.target.children[0])[0].textContent.split('->');
 
+
                 if ( this.hoveredElem !== hoversplit[hoversplit.length - 1]) {
-                    document.getElementById('displayHover').style.left = (e.originalEvent.pageX + 20 ).toString() + 'px';
-                    document.getElementById('displayHover').style.top = (e.originalEvent.pageY + 20 ).toString() + 'px';
-                    document.getElementById('displayHover').style.display = 'block';
+                    // document.getElementById('displayHover').style.left = (e.originalEvent.pageX + 20 ).toString() + 'px';
+                    // document.getElementById('displayHover').style.top = (e.originalEvent.pageY + 20 ).toString() + 'px';
+                    // document.getElementById('displayHover').style.display = 'block';
                 }
                 this.hoveredElem = hoversplit[hoversplit.length - 1] ? hoversplit[hoversplit.length - 1] : '';
+                this.hoveredLeafText.emit(this.hoveredElem);
                 if (e.handleObj.type === 'mouseout') {
                     document.getElementById('displayHover').style.display = 'none';
+                    this.hoveredLeafText.emit('');
                 }
             });
         });
@@ -130,7 +134,7 @@ export class EurovocTestComponentTwo implements OnInit {
                     return d.data.color;
                 }
             })
-            .attr('fill-opacity', d => d.children ? '1' : '0.5')
+            .attr('fill-opacity', d => d.children ? '1' : '0.8')
             .attr( 'd', d => this.getArc()(d.current)); // d attribut je dejsnki 'path' (pot) ki ga bo element zavzel / narisal
         // d ki pride zgoraj kot value je objekt iz arreja skozi katerega loopamo
 

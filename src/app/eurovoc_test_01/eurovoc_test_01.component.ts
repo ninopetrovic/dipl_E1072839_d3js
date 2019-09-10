@@ -103,8 +103,8 @@ export class EurovocTestComponent implements OnInit {
             .style('cursor', 'pointer')
             .on('click', clicked);
 
-        path.append('title')
-            .text(d => `${d.ancestors().map(f => f.data.name).reverse().join('/')}\n${format(d.value)}`);
+        // path.append('title')
+            // .text(d => `${d.ancestors().map(f => f.data.name).reverse().join('/')}\n${format(d.value)}`);
 
         const label = g.append('g')
             .attr('pointer-events', 'none')

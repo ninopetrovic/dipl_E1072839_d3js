@@ -3,6 +3,14 @@
         padding-left: 0px;
     }
 }
+
+.card-body {
+    max-height: calc(100vh - 150px);
+    overflow-y: scroll;
+}
+.card {
+    margin-bottom: 10px;
+}
 //::ng-deep .e-fullrow {
 //    height: 22px !important;
 //}
@@ -50,4 +58,9 @@
         background-color: #f5ecf4;
         cursor: pointer;
     }
+}
+
+// SEARCH
+.search-item:hover {
+    background-color: #f5ecf4;
 }
