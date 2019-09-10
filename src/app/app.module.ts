@@ -23,6 +23,7 @@ import {TestModule} from './test/test.module';
 import {LoginComponent} from './login/login.component';
 import {LoginModule} from './login/login.module';
 import {AuthGuardService as AuthGuard} from './auth/auth-guard.service';
+import {TestService} from './test/test.service';
 
 const appRoutes: Routes = [
     { path: 'line-chart', component: LineChartComponent },
@@ -66,7 +67,7 @@ const appRoutes: Routes = [
         BrushZoomComponent,
         PieChartComponent,
         EurovocTestComponent,
-        EurovocTestComponentTwo,
+        // EurovocTestComponentTwo,
     ],
     imports: [
         CommonModule,
@@ -81,7 +82,8 @@ const appRoutes: Routes = [
     ],
     providers: [
         CookieService,
-        AuthGuard
+        AuthGuard,
+        TestService
     ],
     bootstrap: [AppComponent]
 })

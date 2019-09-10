@@ -107,9 +107,13 @@
         </div>
         <div class="col-lg-5 col-sm-12 mt-sm-2 mt-lg-0 pl-lg-1">
             <div class="card">
-                <div class="card-header">Vizualizacija</div>
+                <div class="card-header">Vizualizacija do najvišjih koncpetov</div>
                 <div class="card-body p-0">
-                    <router-outlet></router-outlet>
+                    <div class="d-flex justify-content-center" *ngIf="!vizualsLoaded" style="height: 100%;">
+                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray"></i>
+                    </div>
+<!--                    <router-outlet></router-outlet>-->
+                    <app-eurovoc-test2 [lang]="lang" (selectedLeaf)="selectedLeaf($event)" (svgLoaded)="vizualsLoaded = true"></app-eurovoc-test2>
                 </div>
             </div>
         </div>

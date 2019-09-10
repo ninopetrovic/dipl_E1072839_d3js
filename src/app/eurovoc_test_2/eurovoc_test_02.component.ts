@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, OnInit } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, EventEmitter, Input, Output } from '@angular/core';
 
 import * as d3 from 'd3';
 import * as d3Scale from 'd3-scale';
@@ -8,6 +8,7 @@ import * as d3Zoom from 'd3-zoom';
 import * as d3Brush from 'd3-brush';
 import * as d3Array from 'd3-array';
 import * as d3TimeFormat from 'd3-time-format';
+import {TestService} from '../test/test.service';
 
 declare const $: any;
 declare const ej: any;
@@ -19,21 +20,69 @@ declare const ej: any;
     styleUrls: []
 })
 export class EurovocTestComponentTwo implements OnInit {
+    @Input() dataSource;
+    @Input() lang = 'en';
+
     data: any;
     width = 1024;
-    radius = 70;
+    radius = 100;
+    hoveredElem = '';
 
-    constructor() {}
+    @Output() svgLoaded = new EventEmitter();
+    @Output() selectedLeaf = new EventEmitter();
+
+    constructor(private testService: TestService) {}
 
     public ngOnInit(): void {
-        $.getJSON('https://raw.githubusercontent.com/d3/d3-hierarchy/v1.1.8/test/data/flare.json', (res) => {
-            console.log(res);
-            this.data = res;
-        }).done(() => {
-            console.log('data', this.data);
+        // $.getJSON('https://raw.githubusercontent.com/d3/d3-hierarchy/v1.1.8/test/data/flare.json', (res) => {
+        //     console.log(res);
+        //     this.data = res;
+        // }).done(() => {
+        //     console.log('data', this.data);
+        //     this.buildChart(this.data);
+        //     console.log(this);
+        // });
+
+        this.testService.getThesaurus('Gemet').subscribe(data => {
+            console.log(data);
+            this.data = data;
+            this.remapData(this.data);
+            console.log(this.data);
             this.buildChart(this.data);
-            console.log(this);
         });
+        this.svgLoaded.subscribe(loaded => {
+            $('path').hover((e) => {
+                // console.log(e);
+                const hoversplit = $(e.target.children[0])[0].textContent.split('->');
+
+                if ( this.hoveredElem !== hoversplit[hoversplit.length - 1]) {
+                    document.getElementById('displayHover').style.left = (e.originalEvent.pageX + 20 ).toString() + 'px';
+                    document.getElementById('displayHover').style.top = (e.originalEvent.pageY + 20 ).toString() + 'px';
+                    document.getElementById('displayHover').style.display = 'block';
+                }
+                this.hoveredElem = hoversplit[hoversplit.length - 1] ? hoversplit[hoversplit.length - 1] : '';
+                if (e.handleObj.type === 'mouseout') {
+                    document.getElementById('displayHover').style.display = 'none';
+                }
+            });
+        });
+    }
+
+    remapData(entity) {
+        entity['children'] = entity.member.length > 0 ? entity.member : undefined;
+        if (entity.labels.length > 0) {
+            if (entity.labels.find(l => l.lang === this.lang && l.type === 'prefLabel')) {
+                entity['name'] = entity.labels.find(l => l.lang === this.lang && l.type === 'prefLabel').label;
+            } else {
+                entity['name'] = '**' + entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel').label + '**';
+            }
+        } else {
+            entity['name'] = 'Gemet';
+        }
+        entity.member.forEach(member => {
+            this.remapData(member);
+        });
+        // return data.member;
     }
 
     buildChart(data): void {
@@ -104,12 +153,14 @@ export class EurovocTestComponentTwo implements OnInit {
             .enter()
             .append('text')
             .attr('dy', '0.35em')
-            .attr('fill-opacity', '1')
+            .attr('fill-opacity',d =>  +this.labelVisible(d.current))
             .attr('transform', (d) => this.labelTransform(d) )
             .text(d => d.data.name);
 
         label.filter(d => !d.children)
             .style('font-size', '5px');
+        label.filter(d => d.children)
+            .style('font-size', '6px');
 
         // krog na sredini za pot nazaj;
         const parent = g.append('circle')
@@ -129,7 +180,9 @@ export class EurovocTestComponentTwo implements OnInit {
             // that.nodeClick(p);
             parent.datum(p.parent || rootPartition);
             parentText.text(p.data.name);
-            console.log(d3.interpolateRainbow);
+            if (p.data.uri) {
+                that.selectedLeaf.emit(p.data.uri);
+            }
 
 
             // TODO pogruntaj
@@ -167,6 +220,7 @@ export class EurovocTestComponentTwo implements OnInit {
                 .attr('fill-opacity', d => +that.labelVisible(d.target))
                 .attrTween('transform', d => () => that.labelTransform(d.current));
         }
+        this.svgLoaded.emit(true);
     }
 
     nodeClick(node) {
@@ -187,6 +241,9 @@ export class EurovocTestComponentTwo implements OnInit {
 
     labelVisible(d) {
         // return (d.x1 - d.x0) > 0;
+        // console.log(d);
+        // return d.data.name.length < 20 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.00;
+        // return false;
         return (d.y1 - d.y0) * (d.x1 - d.x0) > 0.00;
     }
 
@@ -219,7 +276,7 @@ export class EurovocTestComponentTwo implements OnInit {
 
     partition(data) {
         const root = d3.hierarchy(data).sum(d => {
-            if (!d.children) { return 1; }
+            if (!d.children) { console.log(d); return 1; }
         }).sort((a, b) => b.value - a.value);
         return d3.partition().size([2 * Math.PI, root.height + 1])(root);
     }

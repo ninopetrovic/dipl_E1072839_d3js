@@ -6,6 +6,7 @@ import {TestService} from './test.service';
 import {RouterModule, Routes} from '@angular/router';
 import {EurovocTestComponentTwo} from '../eurovoc_test_2/eurovoc_test_02.component';
 import {DonutChartComponent} from '../07_donut_chart/donut-chart.component';
+import {AppModule} from '../app.module';
 
 const testRouts: Routes = [
     { path: 'test-component/test-eurovoc2', component: DonutChartComponent }
@@ -15,9 +16,9 @@ const testRouts: Routes = [
     imports: [
       CommonModule,
       TreeViewModule,
-      RouterModule.forRoot(testRouts)
+      RouterModule.forRoot(testRouts),
     ],
-    declarations: [TestComponent, DonutChartComponent],
+    declarations: [TestComponent, DonutChartComponent, EurovocTestComponentTwo],
     providers: [TestService],
     exports: [TestComponent, TreeViewComponent]
 })

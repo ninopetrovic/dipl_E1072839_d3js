@@ -17,9 +17,10 @@ export class TestComponent implements OnInit, AfterViewInit {
     dataSource = [];
     thesDataSource = [];
     thesLoading = false;
+    vizualsLoaded = false;
     treeViewMappedData = [];
     fields: Object;
-    lang = 'sl';
+    lang = 'ar';
     thesName = 'Gemet';
     selectedEntity: Object;
     selectedEntityUri = '';
@@ -104,6 +105,10 @@ export class TestComponent implements OnInit, AfterViewInit {
     termSelect(term) {
         console.log(term);
         this.getEntityByUri(term.uri);
+    }
+
+    selectedLeaf(args) {
+        this.getEntityByUri(args);
     }
 
     getEntityByUri(uri) {

@@ -2,26 +2,16 @@
     font: 10px sans-serif;
 }
 
-.axis path,
-.axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
+body {
+    width: 800px;
+    margin: 25px auto;
+    font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
-
-.axis-title {
-    fill: none;
-    stroke: black;
-    stroke-width: 0.5px;
+circle {
+    stroke: #fff;
+    stroke-width: 1;
 }
-
-
-.axis--x path {
-    /*display: none;*/
-}
-
-.line {
-    fill: none;
-    stroke: steelblue;
-    stroke-width: 1.5px;
+.link {
+    stroke: #999;
+    stroke-opacity: .6;
 }
