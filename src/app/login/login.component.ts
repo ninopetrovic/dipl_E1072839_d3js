@@ -32,10 +32,6 @@ export class LoginComponent implements OnInit {
           console.log('error', err);
           this.loginMessage = 'Napaka ob prijavi.';
           this.loading = false;
-          // TODO remove (testing only)
-          setTimeout(() => {
-              this.router.navigate(['/test-component']);
-          }, 5000);
       }, () => {
           this.loading = false;
       });

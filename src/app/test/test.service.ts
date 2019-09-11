@@ -16,16 +16,18 @@ export class TestService {
         headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' })
     };
 
-    constructor(private http: HttpClient, private cookieService: CookieService) { }
-
-    loginWithCredentials(username: string, password: string): Observable<any> {
-        // const creds = {'username': username, 'password': password};
-        const addPath = '?username=' + username + '&password=' +  password;
-        return this.http.post<any>(this.prePath + '/connect/token' + addPath, null, this.httpOptionsToken).pipe(tap(credData => {
-            this.cookieService.set('token', credData['access_token'], credData['expires_in']);
-            this.httpOptions.headers.append('Authorization', 'Bearer ' + credData['access_token']);
-        }));
+    constructor(private http: HttpClient, private cookieService: CookieService) {
+        this.httpOptions.headers.append('Authorization', 'Bearer ' +  this.cookieService.get('token'));
     }
+
+    // loginWithCredentials(username: string, password: string): Observable<any> {
+    //     // const creds = {'username': username, 'password': password};
+    //     const addPath = '?username=' + username + '&password=' +  password;
+    //     return this.http.post<any>(this.prePath + '/connect/token' + addPath, null, this.httpOptionsToken).pipe(tap(credData => {
+    //         this.cookieService.set('token', credData['access_token'], credData['expires_in']);
+    //
+    //     }));
+    // }
 
     getThesaurus(name: string): Observable<any> {
         return this.http.get<any>(this.prePath + '/api/dictionary', this.httpOptions);

@@ -104,7 +104,14 @@
                                 <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray"></i>
                             </div>
                             <div class="dipl-treeview-container">
-                                <ejs-treeview #thesTreeView id='diplTreeView' [fields]="fields" (nodeSelected)="nodeSelected($event)">
+                                <ejs-treeview
+                                    #thesTreeView
+                                    id='diplTreeView'
+                                    [fields]="fields"
+                                    (nodeSelected)="nodeSelected($event)"
+                                    (nodeExpanded)="nodeExpanded($event)"
+                                    (dataBound)="treeViewdataBound()"
+                                >
                                     <ng-template #nodeTemplate="" let-data="">
                                         <div class="d-flex flex-row">
                                             <div class="mr-2 type-icon">
@@ -118,6 +125,9 @@
                                     </ng-template>
                                 </ejs-treeview>
                             </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-outline-primary btn-sm btn-block" (click)="expendOrCollapseAll()">Odpri / zapri vse</button>
                         </div>
                     </div>
                 </div>

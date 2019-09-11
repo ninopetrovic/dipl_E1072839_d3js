@@ -37,7 +37,7 @@ const appRoutes: Routes = [
     {
         path: 'test-component',
         component: TestComponent,
-        // canActivate: [AuthGuard],
+        canActivate: [AuthGuard],
         children: [{
             path: 'vizualize',
             component: EurovocTestComponentTwo
@@ -48,11 +48,11 @@ const appRoutes: Routes = [
         component: LoginComponent
     },
     { path: '',
-        redirectTo: '/test-eurovoc2',
+        redirectTo: '/test-component',
         pathMatch: 'full',
     },
     { path: '**',
-        redirectTo: '/test-eurovoc2',
+        redirectTo: '/test-component',
         pathMatch: 'full'
     }
 ];

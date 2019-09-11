@@ -154,10 +154,22 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
 
     // TREE VIEW EVENTS
+    expendOrCollapseAll() {
+        this.thesTreeView.expandAll();
+        // this.thesTreeView.collapseAll();
+    }
     nodeSelected(args) {
         console.log('nodeSelected', args);
         // this.selectedEntityLabel = args.nodeData.text;
+        console.log(this.selectedEntityUri);
         this.getEntityByUri(args.nodeData.id);
+    }
+    nodeExpanded(args) {
+        console.log('nodeExpanded', args);
+    }
+    treeViewdataBound() {
+        console.log('treeViewdataBound');
+        this.thesTreeView.expandAll();
     }
 
     termSelect(term) {
@@ -168,13 +180,21 @@ export class TestComponent implements OnInit, AfterViewInit {
     selectedLeaf(uri) {
         console.log('selectedLeaf', uri);
         this.getEntityByUri(uri);
-        // this.thesTreeView.ensureVisible(this.thesTreeView.getNode(args).id);
-        this.thesTreeView.expandAll();
-        console.log(this.thesTreeView.getNode(uri));
+        this.thesTreeView.collapseAll();
+        setTimeout(() => {
+            this.thesTreeView.ensureVisible(uri);
+            // this.thesTreeView.trigger('nodeSelected', this.thesTreeView.getNode(uri));
+            setTimeout(() => {
+                this.thesTreeView.selectedNodes = [uri];
+            }, 500);
+        }, 500);
+        // this.thesTreeView.expandAll();
+        console.log(this.thesTreeView);
 
     }
 
     getEntityByUri(uri) {
+        if (this.selectedEntityUri === uri) { return; }
         this.selectedEntityUri = uri;
         this.testService.getEntityByUri(this.selectedEntityUri).subscribe(entity => {
             this.selectedEntity = entity
