@@ -6,6 +6,7 @@ import {TreeView} from '@syncfusion/ej2-navigations';
 import {LabelFilterPipe} from '../shared/label.pipe';
 import * as d3 from 'd3';
 import { isoLangs } from '../shared/isoLangs';
+import { thesAboutTexts } from '../shared/thesAboutTexts';
 
 declare const $: any;
 declare const ej: any;
@@ -40,7 +41,14 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
     langName = 'slovenščina';
     isoLangs = isoLangs;
-    query;
+    thesDropDownDataSource =  [
+        { id: 'EuroVoc', thesName: 'EuroVoc' },
+        { id: 'Unescothes', thesName: 'Unescothes' },
+        { id: 'Gemet', thesName: 'Gemet' },
+        { id: 'STW', thesName: 'STW' },
+        { id: 'AgroVoc', thesName: 'AgroVoc' }
+    ];
+    thesDropDownFields = {text: 'thesName', value: 'id'};
 
     // treeView
     @ViewChild('thesTreeView') thesTreeView: TreeViewComponent;
@@ -67,24 +75,25 @@ export class TestComponent implements OnInit, AfterViewInit {
     // pipeFilterArgs
     labelFilterArgs = {'lang': !'LINKED'};
 
+    // THES ABOUTS
+    thesAboutTexts = thesAboutTexts;
+
     constructor(private testService: TestService) { }
 
     ngOnInit() {
-        console.log(this.isoLangs);
-        $.getJSON('https://raw.githubusercontent.com/d3/d3-hierarchy/v1.1.8/test/data/flare.json', (res) => {
-            console.log(res);
-            this.dataSource = res;
-            // this.fields = { dataSource: this.dataSource['children'], id: 'name', text: 'name', child: 'children' };
-        }).done(() => {
-            console.log('data', this.dataSource);
-        });
+        this.getThesaurus(this.thesName);
+    }
 
-        // TEST SERVICE
-        // this.testService.loginWithCredentials('user1', 'user1').subscribe(token => {
-        //     console.log('getToken', token);
-        // });
+    ngAfterViewInit(): void {
+        console.log('thesTreeView', this.thesTreeView);
+        console.log('thesData', this.thesDataSource);
+    }
+
+    getThesaurus(thesName = 'EuroVoc') {
+        console.log('getThesaurus', thesName);
         this.thesLoading = true;
-        this.testService.getThesaurus(this.thesName).subscribe((thesData) => {
+        this.thesDataSource = null;
+        this.testService.getThesaurus(thesName).subscribe((thesData) => {
             console.log('thesData', thesData);
 
             this.thesDataSource = thesData;
@@ -93,17 +102,7 @@ export class TestComponent implements OnInit, AfterViewInit {
             this.fields = { dataSource: this.thesDataSource['children'], id: 'uri', text: 'showLabel', child: 'children', type: 'type' };
             this.thesLoading = false;
             console.log(this.thesTreeView);
-
-            // FLAT DATA
-            // this.mapToFlatData(thesData);
-            // console.log(this.thesFlatData);
         });
-
-        this.getEntityByUri('concept/2712');
-    }
-
-    ngAfterViewInit(): void {
-        console.log('thesTreeView', this.thesTreeView);
     }
 
     activateAllLoaders() {
@@ -128,7 +127,6 @@ export class TestComponent implements OnInit, AfterViewInit {
                 this.mapToFlatData(m);
             });
         }
-        // delete thesData.member;
         this.thesFlatData.push(thesData);
     }
 
@@ -139,7 +137,6 @@ export class TestComponent implements OnInit, AfterViewInit {
         } else {
             if (entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel')) {
                 entity['showLabel'] = '**' + entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel').label + '**';
-                console.log('ta labela nima izraza v tem jeziku: ', entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel').label);
             } else {
                 entity['showLabel'] = '*** labela ne obstaja ***';
             }
@@ -166,13 +163,12 @@ export class TestComponent implements OnInit, AfterViewInit {
     }
     nodeSelected(args) {
         console.log('nodeSelected', args);
-        // this.selectedEntityLabel = args.nodeData.text;
         console.log(this.selectedEntityUri);
         this.getEntityByUri(args.nodeData.id);
     }
     treeViewdataBound() {
         console.log('treeViewdataBound');
-        this.thesTreeView.expandAll();
+        // this.thesTreeView.expandAll();
         if (this.thesDataSource.length > 0) {
             this.thesLoading = false;
         }
@@ -189,13 +185,10 @@ export class TestComponent implements OnInit, AfterViewInit {
         this.thesTreeView.collapseAll();
         setTimeout(() => {
             this.thesTreeView.ensureVisible(uri);
-            // this.thesTreeView.trigger('nodeSelected', this.thesTreeView.getNode(uri));
             setTimeout(() => {
                 this.thesTreeView.selectedNodes = [uri];
             }, 500);
         }, 500);
-        // this.thesTreeView.expandAll();
-        console.log(this.thesTreeView);
 
     }
 
@@ -234,6 +227,17 @@ export class TestComponent implements OnInit, AfterViewInit {
     // language
     langSelect(args) {
         console.log('langSelect', args);
+
         this.lang = args.itemData.code;
+    }
+
+    // thes select
+    thesNameSelected(args) {
+        console.log('thesNameSelected', args);
+        if (args.isInteracted) {
+            this.selectedEntity = null;
+            this.thesName = args.itemData.id;
+            this.getThesaurus(this.thesName);
+        }
     }
 }

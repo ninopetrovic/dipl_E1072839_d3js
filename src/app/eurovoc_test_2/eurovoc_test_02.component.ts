@@ -25,10 +25,13 @@ export class EurovocTestComponentTwo implements OnInit {
     @Input()
     get dataSource() { return this._dataSource; }
     set dataSource(val) {
+        this.svgLoaded.emit(false);
         if (val && val !== this._dataSource) {
-            this._dataSource = val;
-            this.remapData(val);
-            this.buildChart(val);
+            setTimeout(() => { // da počaka na language binding
+                this._dataSource = val;
+                this.remapData(val);
+                this.buildChart(val);
+            }, 500);
         }
     }
     private _lang;
@@ -70,6 +73,8 @@ export class EurovocTestComponentTwo implements OnInit {
         //     this.buildChart(this.data);
         // });
         this.svgLoaded.subscribe(loaded => {
+            console.log(loaded);
+            if (!loaded) { return; }
             $('path').hover((e) => {
                 // console.log(e);
                 const hoversplit = $(e.target.children[0])[0].textContent.split('->');
@@ -91,7 +96,6 @@ export class EurovocTestComponentTwo implements OnInit {
     }
 
     remapData(entity) {
-        console.log(this.lang);
         entity['children'] = entity.children && entity.children.length > 0 ? entity.children : undefined;
         if (entity.labels.length > 0) {
             if (entity.labels.find(l => l.lang === this.lang && l.type === 'prefLabel')) {
@@ -156,7 +160,7 @@ export class EurovocTestComponentTwo implements OnInit {
                     return d.data.color;
                 }
             })
-            .attr('fill-opacity', d => d.children ? '1' : '0.8')
+            .attr('fill-opacity', d => d.children ? '1' : '0.7')
             .attr( 'd', d => this.getArc()(d.current)); // d attribut je dejsnki 'path' (pot) ki ga bo element zavzel / narisal
         // d ki pride zgoraj kot value je objekt iz arreja skozi katerega loopamo
 
@@ -235,7 +239,7 @@ export class EurovocTestComponentTwo implements OnInit {
                 .filter(function(d) {
                     return +this.getAttribute('fill-opacity') || that.arcVisible(d.target);
                 })
-                .attr('fill-opacity', d => d.children ? 1 : 0.5)
+                .attr('fill-opacity', d => d.children ? 1 : 0.7)
                 .attrTween('d', d => () => that.getArc()(d.current));
 
             // label.attr('fill-opacity', '0');
@@ -270,7 +274,7 @@ export class EurovocTestComponentTwo implements OnInit {
         // console.log(d);
         // return d.data.name.length < 20 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.00;
         // return false;
-        return (d.y1 - d.y0) * (d.x1 - d.x0) > 0.00;
+        return (d.y1 - d.y0) * (d.x1 - d.x0) > 0.05;
     }
 
     arcVisible(d) {

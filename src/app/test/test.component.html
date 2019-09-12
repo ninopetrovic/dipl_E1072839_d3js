@@ -1,12 +1,14 @@
 <div class="language-ac" style="position: fixed; right: 15px; z-index: 999" class="d-flex flex-row">
-    <span class="pt-1 pr-2"><b>Jezik: </b></span>
+    <span class="pt-1 px-2"><b>Tezaver: </b></span>
+    <ejs-dropdownlist #thesSelectDropDown [value]="thesName" [dataSource]="thesDropDownDataSource" [fields]="thesDropDownFields" (select)="thesNameSelected($event)"></ejs-dropdownlist>
+    <span class="pt-1 px-2"><b>Jezik: </b></span>
     <ejs-autocomplete id="isoLangAc" [(value)]="langName" [dataSource]="isoLangs" [fields]="{'value': 'name', 'text': 'nativeName'}" (select)="langSelect($event)">
         <ng-template #itemTemplate="" let-data="">
             <span>{{data['name']}} - <i>{{data['nativeName']}}</i></span>
         </ng-template>
     </ejs-autocomplete>
 </div>
-<div class="container-fluid">
+<div class="container-fluid pt-2">
     <div class="row">
         <div class="col-12 d-flex flex-row">
             <i class="fa fa-book m-1"></i>
@@ -14,24 +16,10 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 d-flex flex-row">
-            <div class="dropdown mr-2">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown">Tezaver
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu p-0">
-                    <li class="list-group-item">EuroVoc</li>
-                    <li class="list-group-item">AgroVoc</li>
-                    <li class="list-group-item">STW</li>
-                    <li class="list-group-item">Gemet</li>
-                    <li class="list-group-item">Unsecothes</li>
-                </ul>
-            </div>
-            <div class="input-group col-4">
-                <input type="text" [(ngModel)]="searchString" class="form-control" placeholder="Iskanje po labeli" aria-label="label search" aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" (click)="searchByLabel()">Poišči</button>
-                </div>
+        <div class="input-group col-3 pr-1">
+            <input type="text" [(ngModel)]="searchString" class="form-control" placeholder="Iskanje po oznakah iz vseh tezavrov" aria-label="label search" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" (click)="searchByLabel()">Poišči</button>
             </div>
         </div>
     </div>
@@ -69,7 +57,7 @@
                             <div class="d-flex justify-content-center" *ngIf="thesLoading">
                                 <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray"></i>
                             </div>
-                            <div class="dipl-treeview-container">
+                            <div class="dipl-treeview-container" *ngIf="thesDataSource">
                                 <ejs-treeview
                                     #thesTreeView
                                     id='diplTreeView'
@@ -98,9 +86,15 @@
         <div class="col-lg-4 col-sm-7 px-lg-1 pl-sm-1">
             <div class="card">
                 <div class="card-header">Entiteta <b>{{this.selectedEntityLabel}}</b></div>
-                <div class="card-body">
+                <div class="card-body py-1 px-2">
+                    <div *ngIf="!selectedEntity">
+                        <p>Nobena enititeta ni izbrana.</p>
+                        <h5>O tezavru <b>{{thesName}}</b></h5>
+                        <p>{{thesAboutTexts[thesName]}}</p>
+                    </div>
                     <div *ngIf="selectedEntity">
                         <div style="color: gray"><span><b>URI: </b></span><span>{{selectedEntity['uri']}}</span><br></div>
+                        <div style="color: gray"><span><b>TYPE: </b></span><span>{{selectedEntity['type']}}</span><br></div>
                         <h3>{{selectedEntity['showLabel']}} <span style="color: green">[{{this.lang}}]</span></h3>
                         <div class="term-label">
                             <div class="pref-label">
@@ -156,18 +150,19 @@
             <div class="card">
                 <div class="card-header">Vizualizacija <b *ngIf="vizualsHovered.length > 0">[{{vizualsHovered}} ]</b></div>
                 <div class="card-body p-0">
-                    <div class="d-flex justify-content-center" *ngIf="!vizualsLoaded" style="height: 100%;">
-                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray"></i>
+                    <div class="d-flex justify-content-center" [hidden]="!!thesDataSource" style="height: 100%;">
+                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray" [hidden]="!!thesDataSource"></i>
                     </div>
-<!--                    <router-outlet></router-outlet>-->
-                    <app-eurovoc-test2
-                        [lang]="this.lang"
-                        [thesName]="thesName"
-                        [dataSource]="this.thesDataSource"
-                        (selectedLeaf)="selectedLeaf($event)"
-                        (svgLoaded)="vizualsLoaded = true"
-                        (hoveredLeafText)="vizualsHovered = $event"
-                    ></app-eurovoc-test2>
+                    <div [hidden]="!thesDataSource">
+                        <app-eurovoc-test2
+                            [lang]="this.lang"
+                            [thesName]="thesName"
+                            [dataSource]="this.thesDataSource"
+                            (selectedLeaf)="selectedLeaf($event)"
+                            (svgLoaded)="vizualsLoaded = $event"
+                            (hoveredLeafText)="vizualsHovered = $event"
+                        ></app-eurovoc-test2>
+                    </div>
                 </div>
             </div>
         </div>
