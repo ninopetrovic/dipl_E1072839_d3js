@@ -16,6 +16,7 @@ declare const ej: any;
   styleUrls: ['./test.component.scss']
 })
 export class TestComponent implements OnInit, AfterViewInit {
+    thesName = 'EuroVoc';
     // languages
     private _lang = 'sl';
     get lang() { return this._lang; }
@@ -24,8 +25,10 @@ export class TestComponent implements OnInit, AfterViewInit {
             this._lang = val;
             // TODO reftesh all data
             if (this.thesDataSource) {
+                this.activateAllLoaders();
                 this.treeViewMapper(this.thesDataSource);
-                this.fields = { dataSource: [...this.thesDataSource['member']], id: 'uri', text: 'showLabel', child: 'member', type: 'type' };
+                this.thesDataSource = {...this.thesDataSource};
+                this.fields = { dataSource: [...this.thesDataSource['children']], id: 'uri', text: 'showLabel', child: 'children', type: 'type' };
             }
             if (this.selectedEntity) {
                 this.labelMapper(this.selectedEntity);
@@ -39,6 +42,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     isoLangs = isoLangs;
     query;
 
+    // treeView
     @ViewChild('thesTreeView') thesTreeView: TreeViewComponent;
     dataSource = [];
     thesDataSource = [];
@@ -47,7 +51,6 @@ export class TestComponent implements OnInit, AfterViewInit {
 
     treeViewMappedData = [];
     fields: Object;
-    thesName = 'Gemet';
     selectedEntity: Object;
     selectedEntityUri = '';
     selectedEntityLabel = '';
@@ -81,13 +84,13 @@ export class TestComponent implements OnInit, AfterViewInit {
         //     console.log('getToken', token);
         // });
         this.thesLoading = true;
-        this.testService.getThesaurus('Gemet').subscribe((thesData) => {
+        this.testService.getThesaurus(this.thesName).subscribe((thesData) => {
             console.log('thesData', thesData);
 
             this.thesDataSource = thesData;
             this.treeViewMapper(this.thesDataSource);
 
-            this.fields = { dataSource: this.thesDataSource['member'], id: 'uri', text: 'showLabel', child: 'member', type: 'type' };
+            this.fields = { dataSource: this.thesDataSource['children'], id: 'uri', text: 'showLabel', child: 'children', type: 'type' };
             this.thesLoading = false;
             console.log(this.thesTreeView);
 
@@ -103,9 +106,12 @@ export class TestComponent implements OnInit, AfterViewInit {
         console.log('thesTreeView', this.thesTreeView);
     }
 
+    activateAllLoaders() {
+    }
+
     treeViewMapper(thesData) {
-        if (thesData.member && thesData.member.length > 0) {
-            thesData.member.forEach(m => {
+        if (thesData.children && thesData.children.length > 0) {
+            thesData.children.forEach(m => {
                 if (m.labels.find(l => l.lang === this.lang && l.type === 'prefLabel')) {
                     m['showLabel'] = m.labels.find(l => l.lang === this.lang && l.type === 'prefLabel').label;
                 } else {
@@ -164,12 +170,12 @@ export class TestComponent implements OnInit, AfterViewInit {
         console.log(this.selectedEntityUri);
         this.getEntityByUri(args.nodeData.id);
     }
-    nodeExpanded(args) {
-        console.log('nodeExpanded', args);
-    }
     treeViewdataBound() {
         console.log('treeViewdataBound');
         this.thesTreeView.expandAll();
+        if (this.thesDataSource.length > 0) {
+            this.thesLoading = false;
+        }
     }
 
     termSelect(term) {
@@ -206,6 +212,10 @@ export class TestComponent implements OnInit, AfterViewInit {
     // search
     searchByLabel() {
         console.log(this.searchString);
+        if (!this.searchString || this.searchString.length === 0) {
+            this.searchData = [];
+            return;
+        }
         this.searchLoading = true;
         this.searchData = [];
         this.testService.searchByLabel(this.searchString).subscribe(data => {

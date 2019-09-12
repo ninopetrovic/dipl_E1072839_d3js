@@ -20,8 +20,26 @@ declare const ej: any;
     styleUrls: []
 })
 export class EurovocTestComponentTwo implements OnInit {
-    @Input() dataSource;
-    @Input() lang;
+    @Input() thesName = '';
+    _dataSource;
+    @Input()
+    get dataSource() { return this._dataSource; }
+    set dataSource(val) {
+        if (val && val !== this._dataSource) {
+            this._dataSource = val;
+            this.remapData(val);
+            this.buildChart(val);
+        }
+    }
+    private _lang;
+    @Input()
+    get lang() { return this._lang; }
+    set lang(val) {
+        console.log(val);
+        if (val !== this._lang) {
+            this._lang = val;
+        }
+    }
 
     data: any;
     width = 1024;
@@ -44,13 +62,13 @@ export class EurovocTestComponentTwo implements OnInit {
         //     console.log(this);
         // });
 
-        this.testService.getThesaurus('Gemet').subscribe(data => {
-            // console.log(data);
-            this.data = data;
-            this.remapData(this.data);
-            // console.log(this.data);
-            this.buildChart(this.data);
-        });
+        // this.testService.getThesaurus('EuroVoc').subscribe(data => {
+        //     // console.log(data);
+        //     this.data = data;
+        //     this.remapData(this.data);
+        //     // console.log(this.data);
+        //     this.buildChart(this.data);
+        // });
         this.svgLoaded.subscribe(loaded => {
             $('path').hover((e) => {
                 // console.log(e);
@@ -73,7 +91,8 @@ export class EurovocTestComponentTwo implements OnInit {
     }
 
     remapData(entity) {
-        entity['children'] = entity.member.length > 0 ? entity.member : undefined;
+        console.log(this.lang);
+        entity['children'] = entity.children && entity.children.length > 0 ? entity.children : undefined;
         if (entity.labels.length > 0) {
             if (entity.labels.find(l => l.lang === this.lang && l.type === 'prefLabel')) {
                 entity['name'] = entity.labels.find(l => l.lang === this.lang && l.type === 'prefLabel').label;
@@ -81,11 +100,14 @@ export class EurovocTestComponentTwo implements OnInit {
                 entity['name'] = '**' + entity.labels.find(l => l.lang === 'en' && l.type === 'prefLabel').label + '**';
             }
         } else {
-            entity['name'] = 'Gemet';
+            entity['name'] = this.thesName;
         }
-        entity.member.forEach(member => {
-            this.remapData(member);
-        });
+        if (entity.children) {
+            entity.children.forEach(children => {
+                this.remapData(children);
+            });
+        }
+
         // return data.member;
     }
 
@@ -263,9 +285,9 @@ export class EurovocTestComponentTwo implements OnInit {
             .startAngle(d => d.x0)
             .endAngle(d => d.x1)
             .innerRadius(d => (d.y0 * this.radius) + 2)
-            .outerRadius(d => d.y1 * this.radius)
-            .padAngle(0.003)
-            .cornerRadius(5);
+            .outerRadius(d => d.y1 * this.radius);
+            // .padAngle(0.003)
+            // .cornerRadius(5);
     }
 
     getColor(data, string) {

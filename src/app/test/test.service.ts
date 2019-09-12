@@ -29,8 +29,8 @@ export class TestService {
     //     }));
     // }
 
-    getThesaurus(name: string): Observable<any> {
-        return this.http.get<any>(this.prePath + '/api/dictionary', this.httpOptions);
+    getThesaurus(thesName: string): Observable<any> {
+        return this.http.get<any>(this.prePath + '/api/dictionary/' + thesName, this.httpOptions);
     }
 
     getEntityByUri(uri: string): Observable<any> {

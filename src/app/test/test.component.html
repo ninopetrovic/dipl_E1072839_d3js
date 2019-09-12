@@ -45,51 +45,17 @@
                             <div class="d-flex justify-content-center" *ngIf="searchLoading">
                                 <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray"></i>
                             </div>
-                            <div *ngIf="searchData && searchData.length === 0 && !searchLoading">
+                            <div *ngIf="searchData.length === 0 && !searchLoading">
                                 <span>Brez rezultatov</span>
                             </div>
-                            <div *ngFor="let item of searchData" class="search-item">
-                                <div (click)="termSelect(item)">
-                                    <b>{{item['showLabel']}} <span style="color: green">[{{this.lang}}]</span></b>
-                                    <i> - ({{item['type']}})</i><span> - iz tezavra <b style="color:#a70000">{{item['thesName']}}</b></span>
+                            <div *ngIf="searchData.length > 0">
+                                <div *ngFor="let item of searchData" class="search-item">
+                                    <div (click)="termSelect(item)">
+                                        <b>{{item['showLabel']}} <span style="color: green">[{{this.lang}}]</span></b>
+                                        <i> - ({{item['type']}})</i><span> - iz tezavra <b style="color:#a70000">{{item['thesName']}}</b></span>
+                                    </div>
+                                    <hr class="my-1">
                                 </div>
-<!--                                ACRODION-->
-<!--                                <div class="accordion" id="accordionExample" *ngIf="searchData.length < 25">-->
-<!--                                    <div class="card">-->
-<!--                                        <div class="card-header p-0" id="headingOne">-->
-<!--                                            <span class="mb-0">-->
-<!--                                                <button class="btn btn-link btn-sm" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">-->
-<!--                                                    <small>Glavne oznake</small>-->
-<!--                                                </button>-->
-<!--                                            </span>-->
-<!--                                        </div>-->
-<!--                                        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">-->
-<!--                                            <div class="card-body p-1">-->
-<!--                                                <small *ngFor="let label of item['labels'] | labelfilter:{'lang': !'LINKED', 'type': 'prefLabel'}">-->
-<!--                                                    <span style="text-transform: uppercase;"><b>[{{label['lang']}}] </b></span><span>{{label['label']}}, </span>-->
-<!--                                                </small>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                    <div class="card">-->
-<!--                                        <div class="card-header p-0" id="headingTwo">-->
-<!--                                            <span class="mb-0">-->
-<!--                                                <button class="btn btn-link collapsed btn-sm" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">-->
-<!--                                                    <small>Alternativne oznake</small>-->
-<!--                                                </button>-->
-<!--                                            </span>-->
-<!--                                        </div>-->
-<!--                                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">-->
-<!--                                            <div class="card-body p-1">-->
-<!--                                                <small *ngFor="let label of item['labels'] | labelfilter:{'lang': !'LINKED', 'type': 'altLabel'}">-->
-<!--                                                    <span style="text-transform: uppercase;"><b>[{{label['lang']}}] </b></span><span>{{label['label']}}, </span>-->
-<!--                                                </small>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                END ACRODION-->
-                                <hr class="my-1">
                             </div>
                         </div>
                     </div>
@@ -109,7 +75,6 @@
                                     id='diplTreeView'
                                     [fields]="fields"
                                     (nodeSelected)="nodeSelected($event)"
-                                    (nodeExpanded)="nodeExpanded($event)"
                                     (dataBound)="treeViewdataBound()"
                                 >
                                     <ng-template #nodeTemplate="" let-data="">
@@ -125,9 +90,6 @@
                                     </ng-template>
                                 </ejs-treeview>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="button" class="btn btn-outline-primary btn-sm btn-block" (click)="expendOrCollapseAll()">Odpri / zapri vse</button>
                         </div>
                     </div>
                 </div>
@@ -199,7 +161,9 @@
                     </div>
 <!--                    <router-outlet></router-outlet>-->
                     <app-eurovoc-test2
-                        [lang]="lang"
+                        [lang]="this.lang"
+                        [thesName]="thesName"
+                        [dataSource]="this.thesDataSource"
                         (selectedLeaf)="selectedLeaf($event)"
                         (svgLoaded)="vizualsLoaded = true"
                         (hoveredLeafText)="vizualsHovered = $event"
