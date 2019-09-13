@@ -274,7 +274,7 @@ export class EurovocTestComponentTwo implements OnInit {
         // console.log(d);
         // return d.data.name.length < 20 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.00;
         // return false;
-        return (d.y1 - d.y0) * (d.x1 - d.x0) > 0.05;
+        return (d.y1 - d.y0) * (d.x1 - d.x0) > 0.01;
     }
 
     arcVisible(d) {

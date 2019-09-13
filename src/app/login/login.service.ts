@@ -18,7 +18,8 @@ export class LoginService {
     loginWithCredentials(username: string, password: string): Observable<any> {
         const addPath = '?username=' + username + '&password=' +  password;
         return this.http.post<any>(this.prePath + '/connect/token' + addPath, null, this.httpOptionsToken).pipe(tap(credData => {
-            this.cookieService.set('token', credData['access_token'], credData['expires_in']);
+            const expires_in = new Date(new Date().getTime() + (Number(credData['expires_in']) * 1000));
+            this.cookieService.set('token', credData['access_token'], expires_in);
         }));
     }
 }
