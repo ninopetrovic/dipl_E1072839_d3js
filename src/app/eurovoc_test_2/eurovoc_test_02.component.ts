@@ -126,13 +126,13 @@ export class EurovocTestComponentTwo implements OnInit {
             .attr('viewBox', [0, 0, this.width, this.width])
             .style('font', '10px sans-serif');
         // ZOOM EVENT
-        svg.call(d3.zoom().on('zoom', () => {
-            // console.log(d3.event, this.width);
-            const transform = d3.event.transform;
-            // transform.y /= 2;
-            // transform.x /= 2;
-            d3.select('g').attr('transform', transform);
-        }));
+        // svg.call(d3.zoom().on('zoom', () => {
+        //     // console.log(d3.event, this.width);
+        //     const transform = d3.event.transform;
+        //     // transform.y /= 2;
+        //     // transform.x /= 2;
+        //     d3.select('g').attr('transform', transform);
+        // }));
 
         // dodamo g (skupina elementov) element ter ga postavimo v sredino canvasa;
         const g = svg.append('g')

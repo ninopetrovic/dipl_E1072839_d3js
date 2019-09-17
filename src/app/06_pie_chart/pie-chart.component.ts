@@ -1,10 +1,11 @@
-import { Component, ViewEncapsulation, OnInit } from '@angular/core';
+import {Component, ViewEncapsulation, OnInit, Input} from '@angular/core';
+import * as d3 from 'd3';
+import {text} from '@angular/core/src/render3/instructions';
+import {TestService} from '../test/test.service';
 
-import * as d3 from 'd3-selection';
-import * as d3Scale from 'd3-scale';
-import * as d3Shape from 'd3-shape';
-
-import { POPULATION } from '../shared';
+declare var libraryVar: any;
+declare const $: any;
+declare const ej: any;
 
 @Component({
     selector: 'app-pie-chart',
@@ -13,64 +14,168 @@ import { POPULATION } from '../shared';
     styleUrls: ['./pie-chart.component.css']
 })
 export class PieChartComponent implements OnInit {
+    @Input() data = [];
+    @Input() uri = 'http://eurovoc.europa.eu/2720';
 
-    title = 'Pie Chart';
+    drag;
+    color;
+    height = 600;
+    width = 600;
 
-    private margin = {top: 0, right: 0, bottom: 0, left: 0};
-    private width: number;
-    private height: number;
-    private radius: number;
+    constructor(private testService: TestService) {
+        this.color = (d) => {
+            const scale = d3.scaleOrdinal(d3.schemeCategory10);
+            return () => scale(d.group);
+        };
+        this.drag = (simulation) => {
 
-    private arc: any;
-    private labelArc: any;
-    private pie: any;
-    private color: any;
-    private svg: any;
+            function dragstarted(d) {
+                if (!d3.event.active) { simulation.alphaTarget(0.3).restart(); }
+                d.fx = d.x;
+                d.fy = d.y;
+            }
 
-    constructor() {
-        this.width = 960 - this.margin.left - this.margin.right;
-        this.height = 500 - this.margin.top - this.margin.bottom;
-        this.radius = Math.min(this.width, this.height) / 2;
+            function dragged(d) {
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+            }
+
+            function dragended(d) {
+                if (!d3.event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+
+            return d3.drag()
+                .on('start', dragstarted)
+                .on('drag', dragged)
+                .on('end', dragended);
+        };
     }
 
     ngOnInit() {
-        this.initSvg();
-        this.drawPie();
+        // $.getJSON('https://gist.githubusercontent.com/mbostock/4062045/raw/5916d145c8c048a6e3086915a6be464467391c62/miserables.json', (res) => {
+        //     this.data = res;
+        // }).done(() => {
+        //     console.log('data', this.data);
+        //     const node = this.getVisualization();
+        //     console.log(node);
+        //     document.getElementById('LinkedNodesSvg').appendChild(node);
+        // });
+
+        // MY DATA
+        this.testService.getConceptVizualizationData(this.uri).subscribe((data) => {
+            console.log(data);
+            this.data = data;
+            const node = this.getVisualization();
+            console.log(node);
+            document.getElementById('LinkedNodesSvg').appendChild(node);
+        });
     }
 
-    private initSvg() {
-        d3.select('svg').style('background-color', '#AFAFAF');
-        this.color = d3Scale.scaleOrdinal()
-            .range(['#98abc5', '#8a89a6', '#7b6888', '#20e23f', '#a05d56', '#d0743c', '#ff8c00']);
-        this.arc = d3Shape.arc()
-            .outerRadius(this.radius - 10)
-            .innerRadius(20);
-        this.labelArc = d3Shape.arc()
-            .outerRadius(this.radius - 40)
-            .innerRadius(this.radius - 40);
-        this.pie = d3Shape.pie()
-            .sort(null)
-            .value((d: any) => d.population);
-        this.svg = d3.select('svg')
-            .append('g')
-            .attr('transform', 'translate(' + this.width / 2 + ',' + this.height / 2 + ')');
-    }
+    getVisualization() {
+        const links = this.data['links'].map(d => Object.create(d));
+        const nodes = this.data['nodes'].map(d => Object.create(d));
 
-    private drawPie() {
-        let g = this.svg.selectAll('.arc')
-            .data(this.pie(POPULATION))
+        const simulation = d3.forceSimulation(nodes)
+            .force('link', d3.forceLink(links).id(d => d.id))
+            .force('charge', d3.forceManyBody())
+            .force('center', d3.forceCenter(this.width / 2, this.height / 2));
+
+        const svg = d3.create("svg")
+            .attr("viewBox", [0, 0, this.width, this.height]);
+
+        svg.call(d3.zoom().on('zoom', () => {
+            const transform = d3.event.transform;
+            d3.selectAll('.main-group')
+                .attr('transform', transform);
+        }));
+
+        const link = svg.append("g")
+            .attr('class', 'main-group')
+            .attr("stroke", "#999")
+            .attr("stroke-opacity", 0.6)
+            .selectAll("line")
+            .data(links).enter()
+            .append("line")
+            .attr("stroke-width", d => Math.sqrt(d.value))
+            .attr('class', (d) => 'lineType' +  d.type );
+
+        // const node = svg.append("g")
+        //     .selectAll('g')
+        //     .data(nodes)
+        //     .enter()
+        //     .append('g');
+        //
+        //
+        // const circle = node.append('circle')
+        //     .attr("stroke", "#fff")
+        //     .attr("stroke-width", 1.5)
+        //     .attr('class', (d) => 'nodeGroup' + d.group)
+        //     .attr("r", (d) => this.getRandom(6))
+        //     .attr("fill", (d) => this.getColor(d.group))
+        //     // .call(this.drag(simulation));
+        //     .attr('cx', (d) => d.x)
+        //     .attr('cy', (d) => d.y);
+
+
+
+        const node = svg.append("g")
+            .attr('class', 'main-group')
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1.5)
+            .selectAll("circle")
+            .data(nodes).enter()
+            .append('g').attr('class', 'circleGroup')
+            .append("circle")
+            .attr('class', (d) => 'nodeGroup' + d.group)
+            .attr("r", (d) => 7)
+            .attr("fill", (d) => this.getColor(d.group))
+            .call(this.drag(simulation));
+
+        // console.log(d3.selectAll('.circleGroup'));
+        const tekst = svg.append("g")
+            .attr('class', 'main-group')
+            .selectAll('text')
+            .data(nodes)
             .enter()
-            .append('g')
-            .attr('class', 'arc');
+            .append("text")
+            .attr('class', 'textLabel')
+            .text((d) => d.id);
 
-        g.append('path')
-            .attr('d', this.arc)
-            .style('fill', (d: any) => this.color(d.data.age) );
-        g.append('text')
-            .attr('class', 'nd-label')
-            .attr('transform', (d: any) => 'translate(' + this.labelArc.centroid(d) + ')')
-            .attr('dy', '.35em')
-            .text((d: any) => d.data.age + ' (' + d.data.population + ')');
+        node.append("title")
+            .text(d => d.id);
+
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+
+            tekst
+                .attr("x", d => d.x + 5)
+                .attr("y", d => d.y - 5);
+        });
+
+        // invalidation.then(() => simulation.stop());
+
+        return svg.node();
     }
 
+    getColor(d) {
+        const scale = d3.scaleOrdinal(d3.schemeCategory10);
+        console.log(scale);
+        return scale(d);
+    }
+
+    getRandom(max) {
+        const rnd = Math.floor(Math.random() * max) + 1;
+        console.log(rnd);
+        return rnd;
+    }
 }

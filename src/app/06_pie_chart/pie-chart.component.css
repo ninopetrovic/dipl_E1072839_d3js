@@ -1,13 +1,32 @@
-.arc text {
-    font: 10px sans-serif;
-    text-anchor: middle;
+/*.arc text {*/
+/*    font: 10px sans-serif;*/
+/*    text-anchor: middle;*/
+/*}*/
+
+/*.arc path {*/
+/*    stroke: #fff;*/
+/*}*/
+
+/*.nd-label {*/
+
+/*    font: 10px "Droid Sans" !important;*/
+/*}*/
+
+/**/
+.lineTypebroader {
+    stroke: red;
+}
+.lineTypenarrower {
+    stroke: #00c300;
+}
+.lineTyperelated {
+    stroke: blue;
 }
 
-.arc path {
-    stroke: #fff;
+.nodeGroup1 {
+    fill: green;
 }
 
-.nd-label {
-
-    font: 10px "Droid Sans" !important;
+.textLabel {
+    font-size: 5px;
 }

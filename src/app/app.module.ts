@@ -31,7 +31,7 @@ const appRoutes: Routes = [
     { path: 'bar-chart', component: BarChartComponent },
     { path: 'stacked-bar-chart', component: StackedBarChartComponent },
     { path: 'brush-zoom', component: BrushZoomComponent },
-    { path: 'pie-chart', component: PieChartComponent },
+    { path: 'linked-nodes', component: PieChartComponent },
     { path: 'test-eurovoc', component: EurovocTestComponent },
     { path: 'test-eurovoc2', component: EurovocTestComponentTwo },
     {

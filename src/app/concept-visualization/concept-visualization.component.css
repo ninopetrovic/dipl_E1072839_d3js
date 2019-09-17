@@ -1,0 +1,21 @@
+::ng-deep.lineTypebroader {
+    stroke: #cf001d;
+}
+::ng-deep.lineTypenarrower {
+    stroke: #04c255;
+}
+::ng-deep.lineTyperelated {
+    stroke: #247cd9;
+}
+
+::ng-deep.nodeGroup1 {
+    fill: green;
+}
+
+::ng-deep.textLabel {
+    font-size: 3px;
+}
+
+::ng-deep.mainUri {
+    fill: orange;
+}

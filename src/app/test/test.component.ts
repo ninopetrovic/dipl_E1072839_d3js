@@ -66,6 +66,7 @@ export class TestComponent implements OnInit, AfterViewInit {
     // vizuals
     vizualsLoaded = false;
     vizualsHovered = '';
+    vizualsEntityHovered = '';
 
     // search
     searchLoading = false;
@@ -239,5 +240,10 @@ export class TestComponent implements OnInit, AfterViewInit {
             this.thesName = args.itemData.id;
             this.getThesaurus(this.thesName);
         }
+    }
+
+    // about modal
+    openAboutModal() {
+        $('#aboutModal').modal('show');
     }
 }

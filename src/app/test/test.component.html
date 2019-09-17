@@ -7,6 +7,7 @@
             <span>{{data['name']}} - <i>{{data['nativeName']}}</i></span>
         </ng-template>
     </ejs-autocomplete>
+    <button type="button" class="btn btn-info btn-sm mx-2" style="margin-top: 2px; height: 25px; line-height: 12px;" (click)="openAboutModal()">Info</button>
 </div>
 <div class="container-fluid pt-2">
     <div class="row">
@@ -147,24 +148,46 @@
             </div>
         </div>
         <div class="col-lg-5 col-sm-12 mt-sm-2 mt-lg-0 pl-lg-1">
-            <div class="card">
-                <div class="card-header">Vizualizacija <b *ngIf="vizualsHovered.length > 0">[{{vizualsHovered}} ]</b></div>
-                <div class="card-body p-0">
-                    <div class="d-flex justify-content-center" [hidden]="!!thesDataSource" style="height: 100%;">
-                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray" [hidden]="!!thesDataSource"></i>
-                    </div>
-                    <div [hidden]="!thesDataSource">
-                        <app-eurovoc-test2
-                            [lang]="this.lang"
-                            [thesName]="thesName"
-                            [dataSource]="this.thesDataSource"
-                            (selectedLeaf)="selectedLeaf($event)"
-                            (svgLoaded)="vizualsLoaded = $event"
-                            (hoveredLeafText)="vizualsHovered = $event"
-                        ></app-eurovoc-test2>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">Vizualizacija koncepta<b *ngIf="vizualsEntityHovered.length > 0"> [ {{vizualsEntityHovered}} ]</b></div>
+                        <div class="card-body p-0">
+                            <app-concept-visualization
+                                [thesName]="thesName"
+                                [lang]="lang"
+                                [uri]="selectedEntityUri"
+                                (uriSelected)="selectedLeaf($event)"
+                                (textHovered)="vizualsEntityHovered = $event"
+                            ></app-concept-visualization>
+                        </div>
                     </div>
                 </div>
             </div>
+<!--            VIZUALIZACIJA SLOVARJA-->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">Vizualizacija tezavra <b *ngIf="vizualsHovered.length > 0">[{{vizualsHovered}} ]</b></div>
+                        <div class="card-body p-0">
+                            <div class="d-flex justify-content-center" [hidden]="!!thesDataSource" style="height: 100%;">
+                                <i class="fa fa-spinner fa-pulse fa-3x fa-fw my-4" style="color: gray" [hidden]="!!thesDataSource"></i>
+                            </div>
+                            <div [hidden]="!thesDataSource">
+                                <app-eurovoc-test2
+                                    [lang]="this.lang"
+                                    [thesName]="thesName"
+                                    [dataSource]="this.thesDataSource"
+                                    (selectedLeaf)="selectedLeaf($event)"
+                                    (svgLoaded)="vizualsLoaded = $event"
+                                    (hoveredLeafText)="vizualsHovered = $event"
+                                ></app-eurovoc-test2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

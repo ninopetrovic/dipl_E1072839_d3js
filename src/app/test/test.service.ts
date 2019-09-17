@@ -46,4 +46,11 @@ export class TestService {
 
     getEntityByLabel(label: string) {
     }
+
+    getConceptVizualizationData(uri: string) {
+        const creds = {
+            uri: uri
+        };
+        return this.http.post<any>(this.prePath + '/api/dictionary/VisualizeConcept', creds, this.httpOptions);
+    }
 }

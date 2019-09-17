@@ -10,6 +10,7 @@ import {AppModule} from '../app.module';
 import {FormsModule} from '@angular/forms';
 import {LabelFilterPipe} from '../shared/label.pipe';
 import {AutoCompleteModule, DropDownListModule} from '@syncfusion/ej2-angular-dropdowns';
+import {ConceptVisualizationModule} from '../concept-visualization/concept-visualization.module';
 
 const testRouts: Routes = [
     { path: 'test-component/test-eurovoc2', component: DonutChartComponent }
@@ -22,7 +23,8 @@ const testRouts: Routes = [
         RouterModule.forRoot(testRouts),
         FormsModule,
         AutoCompleteModule,
-        DropDownListModule
+        DropDownListModule,
+        ConceptVisualizationModule
     ],
     declarations: [
         TestComponent,
